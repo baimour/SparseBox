@@ -41,7 +41,7 @@ struct LogView: View {
                 }
             }
         }
-        .navigationTitle(isRebooting ? "Rebooting device" : "Log output")
+        .navigationTitle(isRebooting ? "正在重启设备" : "日志输出")
     }
     
     init(mbdb: Backup, reboot: Bool) {
@@ -79,16 +79,16 @@ struct LogView: View {
                 "-n", "restore", "--no-reboot", "--system",
                 documentsDirectory.path(percentEncoded: false)
             ]
-            print("Executing args: \(restoreArgs)")
+            print("正在执行参数: \(restoreArgs)")
             var argv = restoreArgs.map{ strdup($0) }
             let result = idevicebackup2_main(Int32(restoreArgs.count), &argv)
-            print("idevicebackup2 exited with code \(result)")
+            print("idevicebackup2已退出，代码: \(result)")
             
             log.append("\n")
-            if log.contains("Domain name cannot contain a slash") {
-                log.append("Result: this iOS version is not supported.")
+            if log.contains("域名不能包含斜线") {
+                log.append("结果：不支持此iOS版本！")
             } else if log.contains("crash_on_purpose") || result == 0 {
-                log.append("Result: restore successful.")
+                log.append("结果：文件恢还原成功！")
                 if willReboot {
                     isRebooting.toggle()
                     MobileDevice.rebootDevice(udid: udid)
