@@ -1,19 +1,19 @@
 # SparseBox
 
-On-device backup restoration?
+移动端上的还原数据
 
-- [x] rewrote SparseRestore to swift
+- [x] 将SparseRestore重写为swift
 
-## Installation
-SideStore is recommended as you will also be getting the pairing file and setting up VPN.
+## 安装：
+建议使用SideStore，因为您还将获得配对文件并设置VPN
 
-Download ipa from Actions tab or [nightly.link](https://nightly.link/khanhduytran0/SparseBox/workflows/build/main/artifact.zip)
+从Action选项卡下载IPA或 [nightly.link](https://github.com/baimour/SparseBox/actions/runs/12577366880/artifacts/2377424463)
 
-Before opening SparseBox, you have to close SideStore from app switcher. This is because only one app can use VPN proxy at a time. Maybe changing port could solve this issue.
+在打开SparseBox之前，您必须从后台切换器关闭SideStore，这是因为一次只有一个应用程序可以使用VPN代理。也许改变端口可以解决这个问题
 
-## Thanks to
-- @SideStore: em_proxy and minimuxer
-- @JJTech0130: SparseRestore and backup exploit
+## 非常感谢
+- @SideStore: em_proxy 和 minimuxer
+- @JJTech0130: SparseRestore 和 backup exploit
 - @PoomSmart: MobileGestalt dump
 - @Lakr233: BBackupp
 - @libimobiledevice
