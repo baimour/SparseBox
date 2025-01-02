@@ -91,7 +91,7 @@ struct ContentView: View {
                         Toggle("轻点唤醒 (iPhone SE)", isOn: bindingForMGKeys(["yZf3GTRMGTuwSV/lD7Cagw"]))
                     }
                 } header: {
-                    Text("MobileGestalt")
+                    Text("系统功能修改")
                 }
                 Section {
                     Picker("设备型号", selection:$productType) {
