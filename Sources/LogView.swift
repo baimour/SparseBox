@@ -86,9 +86,9 @@ struct LogView: View {
             
             log.append("\n")
             if log.contains("域名不能包含斜线") {
-                log.append("结果：不支持此iOS版本！")
+                log.append("运行结果：不支持此iOS版本！")
             } else if log.contains("crash_on_purpose") || result == 0 {
-                log.append("结果：文件还原成功！")
+                log.append("运行结果：文件还原成功！")
                 if willReboot {
                     isRebooting.toggle()
                     MobileDevice.rebootDevice(udid: udid)
