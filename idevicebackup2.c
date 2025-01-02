@@ -555,32 +555,32 @@ static int write_restore_applications(plist_t info_plist, afc_client_t afc)
 
 	plist_t applications_plist = plist_dict_get_item(info_plist, "Applications");
 	if (!applications_plist) {
-		printf("No Applications in Info.plist, skipping creation of RestoreApplications.plist\n");
+		printf("Info.plist中没有应用程序，正在跳过创建RestoreApplications.plist\n");
 		return 0;
 	}
 	plist_to_xml(applications_plist, &applications_plist_xml, &applications_plist_xml_length);
 	if (!applications_plist_xml) {
-		printf("Error preparing RestoreApplications.plist\n");
+		printf("准备RestoreApplications.plist时出错！\n");
 		goto leave;
 	}
 
 	afc_error_t afc_err = 0;
 	afc_err = afc_make_directory(afc, "/iTunesRestore");
 	if (afc_err != AFC_E_SUCCESS) {
-		printf("Error creating directory /iTunesRestore, error code %d\n", afc_err);
+		printf("创建目录/iTunesRestore时出错，错误代码: %d\n", afc_err);
 		goto leave;
 	}
 
 	afc_err = afc_file_open(afc, "/iTunesRestore/RestoreApplications.plist", AFC_FOPEN_WR, &restore_applications_file);
 	if (afc_err != AFC_E_SUCCESS  || !restore_applications_file) {
-		printf("Error creating /iTunesRestore/RestoreApplications.plist, error code %d\n", afc_err);
+		printf("创建/iTunesRestore/RestoreApplications.plist时出错，错误代码: %d\n", afc_err);
 		goto leave;
 	}
 
 	uint32_t bytes_written = 0;
 	afc_err = afc_file_write(afc, restore_applications_file, applications_plist_xml, applications_plist_xml_length, &bytes_written);
 	if (afc_err != AFC_E_SUCCESS  || bytes_written != applications_plist_xml_length) {
-		printf("Error writing /iTunesRestore/RestoreApplications.plist, error code %d, wrote %u of %u bytes\n", afc_err, bytes_written, applications_plist_xml_length);
+		printf("写入/iTunesRestore/RestoreApplications.plist时出错，错误代码: %d, 写入%u 个字节中的%u个\n", afc_err, bytes_written, applications_plist_xml_length);
 		goto leave;
 	}
 
@@ -612,7 +612,7 @@ static int mb2_status_check_snapshot_state(const char *path, const char *udid, c
 	plist_read_from_filename(&status_plist, file_path);
 	free(file_path);
 	if (!status_plist) {
-		printf("Could not read Status.plist!\n");
+		printf("无法读取Status.plist\n");
 		return ret;
 	}
 	plist_t node = plist_dict_get_item(status_plist, "SnapshotState");
@@ -624,7 +624,7 @@ static int mb2_status_check_snapshot_state(const char *path, const char *udid, c
 			free(sval);
 		}
 	} else {
-		printf("%s: ERROR could not get SnapshotState key from Status.plist!\n", __func__);
+		printf("%s: 错误: 无法从Status.plist获取SnapshotState密钥！\n", __func__);
 	}
 	plist_free(status_plist);
 	return ret;
@@ -1779,7 +1779,7 @@ int idevicebackup2_main(int argc, char *argv[])
 			if (stat(info_path, &st) != 0) {
 				idevice_free(device);
 				free(info_path);
-				printf("ERROR: Backup directory \"%s\" is invalid. No Info.plist found for UDID %s.\n", backup_directory, source_udid);
+				printf("错误: 备份目录\"%s\"无效，找不到UDID为%s的Info.plist\n", backup_directory, source_udid);
 				return -1;
 			}
 			char* manifest_path = string_build_path(backup_directory, source_udid, "Manifest.plist", NULL);
@@ -1792,7 +1792,7 @@ int idevicebackup2_main(int argc, char *argv[])
 				idevice_free(device);
 				free(info_path);
 				free(manifest_path);
-				printf("ERROR: Backup directory \"%s\" is invalid. No Manifest.plist found for UDID %s.\n", backup_directory, source_udid);
+				printf("错误: 备份目录\"%s\"无效， 找不到UDID为%s的Manifest.plist\n", backup_directory, source_udid);
 				return -1;
 			}
 			node_tmp = plist_dict_get_item(manifest_plist, "IsEncrypted");
@@ -1806,7 +1806,7 @@ int idevicebackup2_main(int argc, char *argv[])
 	}
 
 	if (cmd != CMD_CLOUD && is_encrypted) {
-		PRINT_VERBOSE(1, "This is an encrypted backup.\n");
+		PRINT_VERBOSE(1, "这是一个加密备份\n");
 		if (backup_password == NULL) {
 			backup_password = getenv("BACKUP_PASSWORD");
 			if (backup_password) {
@@ -1815,7 +1815,7 @@ int idevicebackup2_main(int argc, char *argv[])
 		}
 		if (backup_password == NULL) {
 			if (interactive_mode) {
-				backup_password = ask_for_password("Enter backup password", 0);
+				backup_password = ask_for_password("输入备份密码", 0);
 			}
 			if (!backup_password || (strlen(backup_password) == 0)) {
 				if (backup_password) {
@@ -1823,9 +1823,9 @@ int idevicebackup2_main(int argc, char *argv[])
 				}
 				idevice_free(device);
 				if (cmd == CMD_RESTORE) {
-					printf("ERROR: a backup password is required to restore an encrypted backup. Cannot continue.\n");
+					printf("错误: 还原加密备份需要备份密码，无法继续\n");
 				} else if (cmd == CMD_UNBACK) {
-					printf("ERROR: a backup password is required to unback an encrypted backup. Cannot continue.\n");
+					printf("错误: 需要备份密码来解锁加密的备份，无法继续\n");
 				}
 				return -1;
 			}
@@ -1908,7 +1908,7 @@ int idevicebackup2_main(int argc, char *argv[])
 		service = NULL;
 	}
 
-	/* start mobilebackup service and retrieve port */
+	/* start mobilebackup service 和 retrieve port */
 	ldret = lockdownd_start_service_with_escrow_bag(lockdown, MOBILEBACKUP2_SERVICE_NAME, &service);
 	lockdownd_client_free(lockdown);
 	lockdown = NULL;
@@ -1942,7 +1942,7 @@ int idevicebackup2_main(int argc, char *argv[])
 
 		/* verify existing Info.plist */
 		if (info_path && (stat(info_path, &st) == 0) && cmd != CMD_CLOUD) {
-			PRINT_VERBOSE(1, "Reading Info.plist from backup.\n");
+			PRINT_VERBOSE(1, "正在从备份中读取Info.plist\n");
 			plist_read_from_filename(&info_plist, info_path);
 
 			if (!info_plist) {
@@ -2085,7 +2085,7 @@ checkpoint:
 				break;
 			}
 
-			PRINT_VERBOSE(1, "开始还原文件...\n");
+			PRINT_VERBOSE(1, "开始执行还原文件...\n");
 
 			opts = plist_new_dict();
 			plist_dict_set_item(opts, "RestoreSystemFiles", plist_new_bool(cmd_flags & CMD_FLAG_RESTORE_SYSTEM_FILES));
@@ -2499,9 +2499,9 @@ checkpoint:
 					}
 					if (error_code != 0) {
 						if (str) {
-							printf("错误代码 %d: %s\n", error_code, str);
+							printf("错误代码%d: %s\n", error_code, str);
 						} else {
-							printf("错误代码 %d: (未知)\n", error_code);
+							printf("错误代码%d: (未知)\n", error_code);
 						}
 					}
 					if (str) {
@@ -2611,14 +2611,14 @@ files_out:
 				if (operation_ok) {
 					if ((cmd_flags & CMD_FLAG_RESTORE_NO_REBOOT) == 0)
 						PRINT_VERBOSE(1, "设备现在应该重新启动\n");
-					PRINT_VERBOSE(1, "还原成功!\n");
+					PRINT_VERBOSE(1, "还原成功！\n");
 				} else {
 					afc_remove_path(afc, "/iTunesRestore/RestoreApplications.plist");
 					afc_remove_path(afc, "/iTunesRestore");
 					if (quit_flag) {
 						PRINT_VERBOSE(1, "还原已中止！\n");
 					} else {
-						PRINT_VERBOSE(1, "还原失败 (错误代码: %d)\n", -result_code);
+						PRINT_VERBOSE(1, "部分还原失败 (错误代码: %d)\n", -result_code);
 					}
 				}
 				break;
