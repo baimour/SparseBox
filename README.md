@@ -7,7 +7,7 @@
 ## 安装：
 建议使用SideStore，因为您还将获得配对文件并设置VPN
 
-从Action选项卡下载IPA或 [nightly.link](https://github.com/baimour/SparseBox/actions/runs/12577366880/artifacts/2377424463)
+从Action选项卡下载IPA或点击 [nightly.link](https://github.com/baimour/SparseBox/actions/runs/12581144082/artifacts/2378280343)
 
 在打开SparseBox之前，您必须从后台切换器关闭SideStore，这是因为一次只有一个应用程序可以使用VPN代理。也许改变端口可以解决这个问题
 
