@@ -28,7 +28,7 @@ struct ContentView: View {
         NavigationStack(path: $path) {
             Form {
                 Section {
-                    Button(pairingFile == nil ? "Select pairing file" : "Reset pairing file") {
+                    Button(pairingFile == nil ? "选择配对文件" : "重置配对文件") {
                         if pairingFile == nil {
                             showPairingFileImporter.toggle()
                         } else {
@@ -39,7 +39,7 @@ struct ContentView: View {
                         guard let item = items.first else { return false }
                         pairingFile = try! String(decoding: item, as: UTF8.self)
                         guard pairingFile?.contains("DeviceCertificate") ?? false else {
-                            lastError = "The file you just dropped is not a pairing file"
+                            lastError = "您刚刚删除的不是配对文件"
                             showErrorAlert.toggle()
                             pairingFile = nil
                             return false
@@ -49,55 +49,55 @@ struct ContentView: View {
                     }
                 } footer: {
                     if pairingFile != nil {
-                        Text("Pairing file selected")
+                        Text("已选择配对文件")
                     } else {
-                        Text("Select or drag and drop a pairing file to continue. More info: https://docs.sidestore.io/docs/getting-started/pairing-file")
+                        Text("选择配对文件以继续，更多信息: https://docs.sidestore.io/docs/getting-started/pairing-file")
                     }
                 }
                 Section {
-                    Button("List installed apps") {
+                    Button("列出已安装应用") {
                         testListApps()
                     }
-                    Button("Bypass 3 app limit") {
+                    Button("绕过自签3个限制") {
                         testBypassAppLimit()
                     }
                     .disabled(taskRunning)
                 } footer: {
-                    Text("Hide free developer apps from installd, so you could install more than 3 apps. You need to apply this for each 3 apps you install or update.")
+                    Text("隐藏已安装的自签App，这样您就可以安装最多10个App")
                 }
                 Section {
-                    Toggle("Action Button", isOn: bindingForMGKeys(["cT44WE1EohiwRzhsZ8xEsw"]))
+                    Toggle("操作按钮", isOn: bindingForMGKeys(["cT44WE1EohiwRzhsZ8xEsw"]))
                         .disabled(requiresVersion(17))
-                    Toggle("Allow installing iPadOS apps", isOn: bindingForMGKeys(["9MZ5AdH43csAUajl/dU+IQ"], type: [Int].self, defaultValue: [1], enableValue: [1, 2]))
-                    Toggle("Always on Display (18.0+)", isOn: bindingForMGKeys(["j8/Omm6s1lsmTDFsXjsBfA", "2OOJf1VhaM7NxfRok3HbWQ"]))
+                    Toggle("允许安装iPad应用", isOn: bindingForMGKeys(["9MZ5AdH43csAUajl/dU+IQ"], type: [Int].self, defaultValue: [1], enableValue: [1, 2]))
+                    Toggle("始终显示 (18.0+)", isOn: bindingForMGKeys(["j8/Omm6s1lsmTDFsXjsBfA", "2OOJf1VhaM7NxfRok3HbWQ"]))
                         .disabled(requiresVersion(18))
-                    Toggle("Apple Intelligence", isOn: bindingForAppleIntelligence())
+                    Toggle("苹果AI智能", isOn: bindingForAppleIntelligence())
                         .disabled(requiresVersion(18))
-                    Toggle("Apple Pencil", isOn: bindingForMGKeys(["yhHcB0iH0d1XzPO/CFd3ow"]))
-                    Toggle("Boot chime", isOn: bindingForMGKeys(["QHxt+hGLaBPbQJbXiUJX3w"]))
-                    Toggle("Camera button (18.0rc+)", isOn: bindingForMGKeys(["CwvKxM2cEogD3p+HYgaW0Q", "oOV1jhJbdV3AddkcCg0AEA"]))
+                    Toggle("苹果笔", isOn: bindingForMGKeys(["yhHcB0iH0d1XzPO/CFd3ow"]))
+                    Toggle("开机音效", isOn: bindingForMGKeys(["QHxt+hGLaBPbQJbXiUJX3w"]))
+                    Toggle("相机按钮 (18.0RC+)", isOn: bindingForMGKeys(["CwvKxM2cEogD3p+HYgaW0Q", "oOV1jhJbdV3AddkcCg0AEA"]))
                         .disabled(requiresVersion(18))
-                    Toggle("Charge limit", isOn: bindingForMGKeys(["37NVydb//GP/GrhuTN+exg"]))
+                    Toggle("充电限制", isOn: bindingForMGKeys(["37NVydb//GP/GrhuTN+exg"]))
                         .disabled(requiresVersion(17))
-                    Toggle("Crash Detection (might not work)", isOn: bindingForMGKeys(["HCzWusHQwZDea6nNhaKndw"]))
-                    Toggle("Dynamic Island (17.4+, might not work)", isOn: bindingForMGKeys(["YlEtTtHlNesRBMal1CqRaA"]))
+                    Toggle("崩溃检测 (可能无效)", isOn: bindingForMGKeys(["HCzWusHQwZDea6nNhaKndw"]))
+                    Toggle("灵动岛 (17.4+, 可能无效)", isOn: bindingForMGKeys(["YlEtTtHlNesRBMal1CqRaA"]))
                         .disabled(requiresVersion(17, 4))
-                    Toggle("Disable region restrictions", isOn: bindingForRegionRestriction())
-                    Toggle("Internal Storage info", isOn: bindingForMGKeys(["LBJfwOEzExRxzlAnSuI7eg"]))
-                    Toggle("Metal HUD for all apps", isOn: bindingForMGKeys(["EqrsVvjcYDdxHBiQmGhAWw"]))
-                    Toggle("Stage Manager", isOn: bindingForMGKeys(["qeaj75wk3HF4DwQ8qbIi7g"]))
+                    Toggle("禁用区域限制", isOn: bindingForRegionRestriction())
+                    Toggle("内部存储信息", isOn: bindingForMGKeys(["LBJfwOEzExRxzlAnSuI7eg"]))
+                    Toggle("应用金属HUD", isOn: bindingForMGKeys(["EqrsVvjcYDdxHBiQmGhAWw"]))
+                    Toggle("舞台监督 (iPad联动)", isOn: bindingForMGKeys(["qeaj75wk3HF4DwQ8qbIi7g"]))
                         .disabled(UIDevice.current.userInterfaceIdiom != .pad)
                     if let isSE = UIDevice.perform(Selector("_hasHomeButton")) {
-                        Toggle("Tap to Wake (iPhone SE)", isOn: bindingForMGKeys(["yZf3GTRMGTuwSV/lD7Cagw"]))
+                        Toggle("轻点唤醒 (iPhone SE)", isOn: bindingForMGKeys(["yZf3GTRMGTuwSV/lD7Cagw"]))
                     }
                 } header: {
                     Text("MobileGestalt")
                 }
                 Section {
-                    Picker("Device model", selection:$productType) {
+                    Picker("设备型号", selection:$productType) {
                         Text("unchanged").tag(ContentView.machineName())
                         if UIDevice.current.userInterfaceIdiom == .pad {
-                            Text("iPad Pro 11 inch 5th Gen").tag("iPad16,3")
+                            Text("iPad Pro 11英寸五代").tag("iPad16,3")
                         } else {
                             Text("iPhone 15 Pro Max").tag("iPhone16,2")
                             Text("iPhone 16 Pro Max").tag("iPhone17,2")
@@ -105,27 +105,27 @@ struct ContentView: View {
                     }
                     //.disabled(requiresVersion(18, 1))
                 } header: {
-                    Text("Device spoofing")
+                    Text("设备伪装")
                 } footer: {
-                    Text("Only change device model if you're downloading Apple Intelligence models. Face ID may break.")
+                    Text("仅在下载苹果AI型号时需更改，面容ID可能会损坏")
                 }
                 Section {
                     let cacheExtra = mobileGestalt["CacheExtra"] as? NSMutableDictionary
-                    Toggle("Become iPadOS", isOn: bindingForTrollPad())
+                    Toggle("伪装iPadOS", isOn: bindingForTrollPad())
                     // validate DeviceClass
                         .disabled(cacheExtra?["+3Uf0Pm5F8Xy7Onyvko0vA"] as? String != "iPhone")
                 } footer: {
-                    Text("Override user interface idiom to iPadOS, so you could use all iPadOS multitasking features on iPhone. Gives you the same capabilities as TrollPad, but may cause some issues.\nPLEASE DO NOT TURN OFF SHOW DOCK IN STAGE MANAGER OTHERWISE YOUR PHONE WILL BOOTLOOP WHEN ROTATING TO LANDSCAPE.")
+                    Text("将用户界面习惯用法覆盖为iPadOS，这样您就可以在iPhone上使用所有iPadOS后台功能。为您提供与TrollPad相同的功能，但可能会导致一些问题\n请不要关闭舞台管理器中的Dock，否则您的手机在旋转为横向时会出现启动循环")
                 }
                 Section {
-                    Toggle("Reboot after finish restoring", isOn: $reboot)
-                    Button("Apply changes") {
+                    Toggle("还原后重启设备", isOn: $reboot)
+                    Button("应用更改") {
                         saveProductType()
                         try! mobileGestalt.write(to: modMGURL)
                         applyChanges()
                     }
                     .disabled(taskRunning)
-                    Button("Reset changes") {
+                    Button("重置默认") {
                         try! FileManager.default.removeItem(at: modMGURL)
                         try! FileManager.default.copyItem(at: origMGURL, to: modMGURL)
                         mobileGestalt = try! NSMutableDictionary(contentsOf: modMGURL, error: ())
@@ -135,13 +135,14 @@ struct ContentView: View {
                 } footer: {
                     VStack {
                         Text("""
-A terrible app by @khanhduytran0. Use it at your own risk.
-Thanks to:
+由@khanhduytran0开发的应用程序，请自行承担使用风险
+感谢:
 @SideStore: em_proxy and minimuxer
 @JJTech0130: SparseRestore and backup exploit
 @PoomSmart: MobileGestalt dump
 @Lakr233: BBackupp
 @libimobiledevice
+@baimour: 中文汉化🇨🇳
 """)
                     }
                 }
@@ -156,7 +157,7 @@ Thanks to:
                     showErrorAlert.toggle()
                 }
             })
-            .alert("Error", isPresented: $showErrorAlert) {
+            .alert("发生错误", isPresented: $showErrorAlert) {
                 Button("OK") {}
             } message: {
                 Text(lastError ?? "???")
@@ -213,7 +214,7 @@ Thanks to:
             _mobileGestalt = State(initialValue: try NSMutableDictionary(contentsOf: modMGURL, error: ()))
         } catch {
             _mobileGestalt = State(initialValue: [:])
-            _initError = State(initialValue: "Failed to copy MobileGestalt: \(error)")
+            _initError = State(initialValue: "无法复制MobileGestalt: \(error)")
             taskRunning = true
         }
         
@@ -230,7 +231,7 @@ Thanks to:
                 mbdb = Restore.createBypassAppLimit()
                 path.append("ApplyNoReboot")
             } else {
-                lastError = "minimuxer is not ready. Ensure you have WiFi and WireGuard VPN set up."
+                lastError = "minimuxer尚未就绪，请确保您已连接WiFi和WireGuard VPN"
                 showErrorAlert.toggle()
             }
             taskRunning = false
@@ -241,7 +242,7 @@ Thanks to:
         if ready() {
             path.append("ListApps")
         } else {
-            lastError = "minimuxer is not ready. Ensure you have WiFi and WireGuard VPN set up."
+            lastError = "minimuxer尚未就绪，请确保您已连接WiFi和WireGuard VPN"
             showErrorAlert.toggle()
         }
     }
@@ -254,7 +255,7 @@ Thanks to:
                 //Restore.createBackupFiles(files: generateFilesToRestore())
                 path.append("ApplyChanges")
             } else {
-                lastError = "minimuxer is not ready. Ensure you have WiFi and WireGuard VPN set up."
+                lastError = "minimuxer尚未就绪，请确保您已连接WiFi和WireGuard VPN"
                 showErrorAlert.toggle()
             }
             taskRunning = false
