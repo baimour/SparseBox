@@ -162,7 +162,7 @@ struct ContentView: View {
             } message: {
                 Text(lastError ?? "???")
             }
-            。navigationDestination(for: String.self) { view in
+            .navigationDestination(for: String.self) { view in
                 if view == "ApplyChanges" {
                     LogView(mbdb: mbdb!, reboot: reboot)
                 } else if view == "ApplyNoReboot" {
@@ -171,7 +171,7 @@ struct ContentView: View {
                     AppListView()
                 }
             }
-            。navigationTitle("SparseBox")
+            .navigationTitle("SparseBox")
         }
         .onAppear {
             if initError != nil {
