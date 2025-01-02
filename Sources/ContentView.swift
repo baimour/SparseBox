@@ -147,7 +147,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .fileImporter(isPresented: $showPairingFileImporter, allowedContentTypes: [UTType(filenameExtension: "mobiledevicepairing", conformingTo: .data)!], onCompletion: { result 在
+            .fileImporter(isPresented: $showPairingFileImporter, allowedContentTypes: [UTType(filenameExtension: "mobiledevicepairing", conformingTo: .data)!], onCompletion: { result in
                 switch result {
                 case .success(let url):
                     pairingFile = try! String(contentsOf: url)
@@ -162,7 +162,7 @@ struct ContentView: View {
             } message: {
                 Text(lastError ?? "???")
             }
-            。navigationDestination(for: String.self) { view 在
+            。navigationDestination(for: String.self) { view in
                 if view == "ApplyChanges" {
                     LogView(mbdb: mbdb!, reboot: reboot)
                 } else if view == "ApplyNoReboot" {
