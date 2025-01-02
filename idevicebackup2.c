@@ -649,7 +649,7 @@ static void do_post_notification(idevice_t device, const char *notification)
 			np_client_free(np);
 		}
 	} else {
-		printf("ERROR: Could not start service %s: %s\n", NP_SERVICE_NAME, lockdownd_strerror(ldret));
+		printf("错误：无法启动服务%s: %s\n", NP_SERVICE_NAME, lockdownd_strerror(ldret));
 	}
 
 	if (service) {
@@ -827,7 +827,7 @@ static int mb2_handle_send_file(mobilebackup2_client_t mobilebackup2, const char
 	total = fst.st_size;
 
 	char *format_size = string_format_size(total);
-	PRINT_VERBOSE(1, "Sending '%s' (%s)\n", path, format_size);
+	PRINT_VERBOSE(1, "正在发送'%s' (%s)\n", path, format_size);
 	free(format_size);
 
 	if (total == 0) {
@@ -837,7 +837,7 @@ static int mb2_handle_send_file(mobilebackup2_client_t mobilebackup2, const char
 
 	f = fopen(localfile, "rb");
 	if (!f) {
-		printf("%s: Error opening local file '%s': %d\n", __func__, localfile, errno);
+		printf("%s: 打开本地文件'%s'时出错: %d\n", __func__, localfile, errno);
 		errcode = errno;
 		goto leave;
 	}
@@ -860,7 +860,7 @@ static int mb2_handle_send_file(mobilebackup2_client_t mobilebackup2, const char
 		/* send file contents */
 		size_t r = fread(buf, 1, sizeof(buf), f);
 		if (r <= 0) {
-			printf("%s: read error\n", __func__);
+			printf("%s: 读取错误！\n", __func__);
 			errcode = errno;
 			goto leave;
 		}
@@ -869,7 +869,7 @@ static int mb2_handle_send_file(mobilebackup2_client_t mobilebackup2, const char
 			goto leave_proto_err;
 		}
 		if (bytes != (uint32_t)r) {
-			printf("Error: sent only %d of %d bytes\n", bytes, (int)r);
+			printf("错误：仅发送%d字节中的%d个\n", bytes, (int)r);
 			goto leave_proto_err;
 		}
 		sent += r;
@@ -1037,7 +1037,7 @@ static int mb2_handle_receive_files(mobilebackup2_client_t mobilebackup2, plist_
 		plist_get_uint_val(node, &backup_total_size);
 	}
 	if (backup_total_size > 0) {
-		PRINT_VERBOSE(1, "Receiving files\n");
+		PRINT_VERBOSE(1, "正在接收文件\n");
 	}
 
 	do {
@@ -1070,7 +1070,7 @@ static int mb2_handle_receive_files(mobilebackup2_client_t mobilebackup2, plist_
 		nlen = 0;
 		mobilebackup2_receive_raw(mobilebackup2, (char*)&nlen, 4, &r);
 		if (r != 4) {
-			printf("ERROR: %s: could not receive code length!\n", __func__);
+			printf("错误: %s: 无法接收代码长度！\n", __func__);
 			break;
 		}
 		nlen = be32toh(nlen);
@@ -1080,7 +1080,7 @@ static int mb2_handle_receive_files(mobilebackup2_client_t mobilebackup2, plist_
 
 		mobilebackup2_receive_raw(mobilebackup2, &code, 1, &r);
 		if (r != 1) {
-			printf("ERROR: %s: could not receive code!\n", __func__);
+			printf("错误: %s: 无法接收代码！\n", __func__);
 			break;
 		}
 
@@ -1132,7 +1132,7 @@ static int mb2_handle_receive_files(mobilebackup2_client_t mobilebackup2, plist_
 		} else {
 			errcode = errno_to_device_error(errno);
 			errdesc = strerror(errno);
-			printf("Error opening '%s' for writing: %s\n", bname, errdesc);
+			printf("打开'%s'写入时出错: %s\n", bname, errdesc);
 			break;
 		}
 		if (nlen == 0) {
@@ -1147,7 +1147,7 @@ static int mb2_handle_receive_files(mobilebackup2_client_t mobilebackup2, plist_
 			msg[r] = 0;
 			/* If sent using CODE_FILE_DATA, end marker will be CODE_ERROR_REMOTE which is not an error! */
 			if (last_code != CODE_FILE_DATA) {
-				fprintf(stdout, "\nReceived an error message from device: %s\n", msg);
+				fprintf(stdout, "\n收到来自设备的错误消息: %s\n", msg);
 			}
 			free(msg);
 		}
@@ -1158,7 +1158,7 @@ static int mb2_handle_receive_files(mobilebackup2_client_t mobilebackup2, plist_
 
 	/* if there are leftovers to read, finish up cleanly */
 	if ((int)nlen-1 > 0) {
-		PRINT_VERBOSE(1, "\nDiscarding current data hunk.\n");
+		PRINT_VERBOSE(1, "\n正在丢弃当前数据块\n");
 		fname = (char*)malloc(nlen-1);
 		mobilebackup2_receive_raw(mobilebackup2, fname, nlen-1, &r);
 		free(fname);
@@ -1234,7 +1234,7 @@ static void mb2_handle_list_directory(mobilebackup2_client_t mobilebackup2, plis
 	mobilebackup2_error_t err = mobilebackup2_send_status_response(mobilebackup2, 0, NULL, dirlist);
 	plist_free(dirlist);
 	if (err != MOBILEBACKUP2_E_SUCCESS) {
-		printf("Could not send status response, error %d\n", err);
+		printf("无法发送状态响应，错误: %d\n", err);
 	}
 }
 
@@ -1261,7 +1261,7 @@ static void mb2_handle_make_directory(mobilebackup2_client_t mobilebackup2, plis
 	free(newpath);
 	mobilebackup2_error_t err = mobilebackup2_send_status_response(mobilebackup2, errcode, errdesc, NULL);
 	if (err != MOBILEBACKUP2_E_SUCCESS) {
-		printf("Could not send status response, error %d\n", err);
+		printf("无法发送状态响应，错误: %d\n", err);
 	}
 }
 
@@ -1273,13 +1273,13 @@ static void mb2_copy_file_by_path(const char *src, const char *dst)
 
 	/* open source file */
 	if ((from = fopen(src, "rb")) == NULL) {
-		printf("Cannot open source path '%s'.\n", src);
+		printf("无法开源路径: '%s'\n", src);
 		return;
 	}
 
 	/* open destination file */
 	if ((to = fopen(dst, "wb")) == NULL) {
-		printf("Cannot open destination file '%s'.\n", dst);
+		printf("无法打开目标文件: '%s'\n", dst);
 		fclose(from);
 		return;
 	}
@@ -1290,11 +1290,11 @@ static void mb2_copy_file_by_path(const char *src, const char *dst)
 	}
 
 	if(fclose(from) == EOF) {
-		printf("Error closing source file.\n");
+		printf("关闭源文件时出错！\n");
 	}
 
 	if(fclose(to) == EOF) {
-		printf("Error closing destination file.\n");
+		printf("关闭目标文件时出错！\n");
 	}
 }
 
@@ -1308,7 +1308,7 @@ static void mb2_copy_directory_by_path(const char *src, const char *dst)
 
 	/* if src does not exist */
 	if ((stat(src, &st) < 0) || !S_ISDIR(st.st_mode)) {
-		printf("ERROR: Source directory does not exist '%s': %s (%d)\n", src, strerror(errno), errno);
+		printf("错误: 源目录'%s'不存在: %s (%d)\n", src, strerror(errno), errno);
 		return;
 	}
 
@@ -1316,7 +1316,7 @@ static void mb2_copy_directory_by_path(const char *src, const char *dst)
 	if ((stat(dst, &st) < 0) || !S_ISDIR(st.st_mode)) {
 		/* create it */
 		if (mkdir_with_parents(dst, 0755) < 0) {
-			printf("ERROR: Unable to create destination directory '%s': %s (%d)\n", dst, strerror(errno), errno);
+			printf("错误: 无法创建目标目录'%s': %s (%d)\n", dst, strerror(errno), errno);
 			return;
 		}
 	}
@@ -1417,52 +1417,52 @@ static char* ask_for_password(const char* msg, int type_again)
  */
 static void clean_exit(int sig)
 {
-	fprintf(stderr, "Exiting...\n");
+	fprintf(stderr, "正在退出...\n");
 	quit_flag++;
 }
 
 static void print_usage(int argc, char **argv, int is_error)
 {
 	char *name = strrchr(argv[0], '/');
-	fprintf(is_error ? stderr : stdout, "Usage: %s [OPTIONS] CMD [CMDOPTIONS] DIRECTORY\n", (name ? name + 1: argv[0]));
+	fprintf(is_error ? stderr : stdout, "用法: %s [选项] CMD [子命令] 目录\n", (name ? name + 1: argv[0]));
 	fprintf(is_error ? stderr : stdout,
 		"\n"
-		"Create or restore backup in/from the specified directory.\n"
+		"在指定目录中创建或还原备份\n"
 		"\n"
-		"CMD:\n"
-		"  backup        create backup for the device\n"
-		"    --full              force full backup from device.\n"
-		"  restore       restore last backup to the device\n"
-		"    --system            restore system files, too.\n"
-		"    --no-reboot         do NOT reboot the device when done (default: yes).\n"
-		"    --copy              create a copy of backup folder before restoring.\n"
-		"    --settings          restore device settings from the backup.\n"
-		"    --remove            remove items which are not being restored\n"
-		"    --skip-apps         do not trigger re-installation of apps after restore\n"
-		"    --password PWD      supply the password for the encrypted source backup\n"
-		"  info          show details about last completed backup of device\n"
-		"  list          list files of last completed backup in CSV format\n"
+		"命令:\n"
+		"  backup        为设备创建备份\n"
+		"    --full              强制从设备执行完整备份\n"
+		"  restore       将上次备份还原到设备\n"
+		"    --system            也还原系统文件\n"
+		"    --no-reboot         完成后不重启设备 (默认: yes)\n"
+		"    --copy              在还原之前创建备份文件夹的副本\n"
+		"    --settings          从备份中还原设备设置\n"
+		"    --remove            删除未还原的项目\n"
+		"    --skip-apps         还原后不重新安装应用\n"
+		"    --password PWD      提供加密源备份的密码\n"
+		"  info          显示设备上一次完成备份的详情\n"
+		"  list          以CSV格式列出上次完成备份的文件\n"
 		"  unback        unpack a completed backup in DIRECTORY/_unback_/\n"
 		"  encryption on|off [PWD]       enable or disable backup encryption\n"
 		"  changepw [OLD NEW]    change backup password on target device\n"
 		"  cloud on|off          enable or disable cloud use (requires iCloud account)\n"
 		"\n"
-		"NOTE: Passwords will be requested in interactive mode (-i) if omitted, or can\n"
-		"be passed via environment variable BACKUP_PASSWORD/BACKUP_PASSWORD_NEW.\n"
-		"See man page for further details.\n"
+		"提示: 如果省略，将在交互模式（-i）下请求密码\n"
+		"或者可以通过环境变量BACKUP_PASSWORD/BACKUP_PASSWORD_NEW输入密码\n"
+		"有关详细信息，请参阅手册\n"
 		"\n"
-		"OPTIONS:\n"
-		"  -u, --udid UDID       target specific device by UDID\n"
-		"  -s, --source UDID     use backup data from device specified by UDID\n"
-		"  -n, --network         connect to network device\n"
-		"  -i, --interactive     request passwords interactively\n"
-		"  -d, --debug           enable communication debugging\n"
-		"  -h, --help            prints usage information\n"
-		"  -v, --version         prints version information\n"
+		"选项:\n"
+		"  -u, --udid UDID       通过UDID指定设备\n"
+		"  -s, --source UDID     使用UDID指定设备的备份数据\n"
+		"  -n, --network         连接到网络设备\n"
+		"  -i, --interactive     交互式请求密码\n"
+		"  -d, --debug           启用通信调试\n"
+		"  -h, --help            显示使用帮助\n"
+		"  -v, --version         显示版本信息\n"
 		"\n"
 #ifdef HAVE_CONFIG_H
-		"Homepage:    <" PACKAGE_URL ">\n"
-		"Bug Reports: <" PACKAGE_BUGREPORT ">\n"
+		"项目主页:    <" PACKAGE_URL ">\n"
+		"错误反馈: <" PACKAGE_BUGREPORT ">\n"
 #endif
 	);
 }
@@ -1802,7 +1802,7 @@ int idevicebackup2_main(int argc, char *argv[])
 			plist_free(manifest_plist);
 			free(manifest_path);
 		}
-		PRINT_VERBOSE(1, "Backup directory is \"%s\"\n", backup_directory);
+		PRINT_VERBOSE(1, "备份目录为\"%s\"\n", backup_directory);
 	}
 
 	if (cmd != CMD_CLOUD && is_encrypted) {
@@ -1833,7 +1833,7 @@ int idevicebackup2_main(int argc, char *argv[])
 	}
 
 	if (LOCKDOWN_E_SUCCESS != (ldret = lockdownd_client_new_with_handshake(device, &lockdown, TOOL_NAME))) {
-		printf("ERROR: Could not connect to lockdownd, error code %d\n", ldret);
+		printf("错误：无法连接到锁定设备，错误代码: %d\n", ldret);
 		idevice_free(device);
 		return -1;
 	}
@@ -1882,7 +1882,7 @@ int idevicebackup2_main(int argc, char *argv[])
 		};
 		np_observe_notifications(np, noties);
 	} else {
-		printf("ERROR: Could not start service %s: %s\n", NP_SERVICE_NAME, lockdownd_strerror(ldret));
+		printf("错误：无法启动服务%s: %s\n", NP_SERVICE_NAME, lockdownd_strerror(ldret));
 		cmd = CMD_LEAVE;
 		goto checkpoint;
 	}
@@ -1897,7 +1897,7 @@ int idevicebackup2_main(int argc, char *argv[])
 		if ((ldret == LOCKDOWN_E_SUCCESS) && service->port) {
 			afc_client_new(device, service, &afc);
 		} else {
-			printf("ERROR: Could not start service %s: %s\n", AFC_SERVICE_NAME, lockdownd_strerror(ldret));
+			printf("错误：无法启动服务%s: %s\n", AFC_SERVICE_NAME, lockdownd_strerror(ldret));
 			cmd = CMD_LEAVE;
 			goto checkpoint;
 		}
@@ -1913,7 +1913,7 @@ int idevicebackup2_main(int argc, char *argv[])
 	lockdownd_client_free(lockdown);
 	lockdown = NULL;
 	if ((ldret == LOCKDOWN_E_SUCCESS) && service && service->port) {
-		PRINT_VERBOSE(1, "Started \"%s\" service on port %d.\n", MOBILEBACKUP2_SERVICE_NAME, service->port);
+		PRINT_VERBOSE(1, "已启动\"%s\"服务，端口: %d\n", MOBILEBACKUP2_SERVICE_NAME, service->port);
 		mobilebackup2_client_new(device, service, &mobilebackup2);
 
 		if (service) {
@@ -1926,16 +1926,16 @@ int idevicebackup2_main(int argc, char *argv[])
 		double remote_version = 0.0;
 		err = mobilebackup2_version_exchange(mobilebackup2, local_versions, 2, &remote_version);
 		if (err != MOBILEBACKUP2_E_SUCCESS) {
-			printf("Could not perform backup protocol version exchange, error code %d\n", err);
+			printf("无法执行备份协议版本交换，错误代码: %d\n", err);
 			cmd = CMD_LEAVE;
 			goto checkpoint;
 		}
 
-		PRINT_VERBOSE(1, "Negotiated Protocol Version %.1f\n", remote_version);
+		PRINT_VERBOSE(1, "协商协议版本: %.1f\n", remote_version);
 
 		/* check abort conditions */
 		if (quit_flag > 0) {
-			PRINT_VERBOSE(1, "Aborting as requested by user...\n");
+			PRINT_VERBOSE(1, "根据用户请求正在中止...\n");
 			cmd = CMD_LEAVE;
 			goto checkpoint;
 		}
@@ -1946,12 +1946,12 @@ int idevicebackup2_main(int argc, char *argv[])
 			plist_read_from_filename(&info_plist, info_path);
 
 			if (!info_plist) {
-				printf("Could not read Info.plist\n");
+				printf("无法读取Info.plist\n");
 				is_full_backup = 1;
 			}
 		} else {
 			if (cmd == CMD_RESTORE) {
-				printf("Aborting restore. Info.plist is missing.\n");
+				printf("正在中止还原。缺少Info.plist\n");
 				cmd = CMD_LEAVE;
 			} else {
 				is_full_backup = 1;
@@ -1976,13 +1976,13 @@ int idevicebackup2_main(int argc, char *argv[])
 					continue;
 				}
 
-				fprintf(stderr, "ERROR: could not lock file! error code: %d\n", aerr);
+				fprintf(stderr, "错误：无法锁定文件！错误代码: %d\n", aerr);
 				afc_file_close(afc, lockfile);
 				lockfile = 0;
 				cmd = CMD_LEAVE;
 			}
 			if (i == LOCK_ATTEMPTS) {
-				fprintf(stderr, "ERROR: timeout while locking for sync\n");
+				fprintf(stderr, "错误：锁定同步时超时\n");
 				afc_file_close(afc, lockfile);
 				lockfile = 0;
 				cmd = CMD_LEAVE;
@@ -1999,12 +1999,12 @@ checkpoint:
 			plist_free(opts);
 			opts = NULL;
 			if (err != MOBILEBACKUP2_E_SUCCESS) {
-				printf("Error setting cloud backup state on device, error code %d\n", err);
+				printf("在设备上设置云备份状态时出错，错误代码: %d\n", err);
 				cmd = CMD_LEAVE;
 			}
 			break;
 			case CMD_BACKUP:
-			PRINT_VERBOSE(1, "Starting backup...\n");
+			PRINT_VERBOSE(1, "正在开始备份...\n");
 
 			/* make sure backup device sub-directory exists */
 			char* devbackupdir = string_build_path(backup_directory, source_udid, NULL);
@@ -2033,7 +2033,7 @@ checkpoint:
 			}
 			info_plist = mobilebackup_factory_info_plist_new(udid, device, afc);
 			if (!info_plist) {
-				fprintf(stderr, "Failed to generate Info.plist - aborting\n");
+				fprintf(stderr, "生成Info.plist失败 - 正在中止\n");
 				cmd = CMD_LEAVE;
 			}
 			remove_file(info_path);
@@ -2044,33 +2044,33 @@ checkpoint:
 			info_plist = NULL;
 
 			if (cmd_flags & CMD_FLAG_FORCE_FULL_BACKUP) {
-				PRINT_VERBOSE(1, "Enforcing full backup from device.\n");
+				PRINT_VERBOSE(1, "正在从设备强制执行完整备份\n");
 				opts = plist_new_dict();
 				plist_dict_set_item(opts, "ForceFullBackup", plist_new_bool(1));
 			}
 			/* request backup from device with manifest from last backup */
 			if (willEncrypt) {
-				PRINT_VERBOSE(1, "Backup will be encrypted.\n");
+				PRINT_VERBOSE(1, "备份将被加密\n");
 			} else {
-				PRINT_VERBOSE(1, "Backup will be unencrypted.\n");
+				PRINT_VERBOSE(1, "备份将不加密\n");
 			}
-			PRINT_VERBOSE(1, "Requesting backup from device...\n");
+			PRINT_VERBOSE(1, "正在从设备请求备份...\n");
 			err = mobilebackup2_send_request(mobilebackup2, "Backup", udid, source_udid, opts);
 			if (opts)
 				plist_free(opts);
 			if (err == MOBILEBACKUP2_E_SUCCESS) {
 				if (is_full_backup) {
-					PRINT_VERBOSE(1, "Full backup mode.\n");
+					PRINT_VERBOSE(1, "完整备份模式\n");
 				}	else {
-					PRINT_VERBOSE(1, "Incremental backup mode.\n");
+					PRINT_VERBOSE(1, "增量备份模式\n");
 				}
 			} else {
 				if (err == MOBILEBACKUP2_E_BAD_VERSION) {
-					printf("ERROR: Could not start backup process: backup protocol version mismatch!\n");
+					printf("错误：无法启动备份进程：备份协议版本不匹配！\n");
 				} else if (err == MOBILEBACKUP2_E_REPLY_NOT_OK) {
-					printf("ERROR: Could not start backup process: device refused to start the backup process.\n");
+					printf("错误：无法启动备份进程：设备拒绝启动备份进程\n");
 				} else {
-					printf("ERROR: Could not start backup process: unspecified error occurred\n");
+					printf("错误：无法启动备份进程：发生未指定错误\n");
 				}
 				cmd = CMD_LEAVE;
 			}
@@ -2080,33 +2080,33 @@ checkpoint:
 
 			/* verify if Status.plist says we read from an successful backup */
 			if (!mb2_status_check_snapshot_state(backup_directory, source_udid, "finished")) {
-				printf("ERROR: Cannot ensure we restore from a successful backup. Aborting.\n");
+				printf("错误：无法确保从成功备份中还原，正在终止...\n");
 				cmd = CMD_LEAVE;
 				break;
 			}
 
-			PRINT_VERBOSE(1, "Starting Restore...\n");
+			PRINT_VERBOSE(1, "开始还原文件...\n");
 
 			opts = plist_new_dict();
 			plist_dict_set_item(opts, "RestoreSystemFiles", plist_new_bool(cmd_flags & CMD_FLAG_RESTORE_SYSTEM_FILES));
-			PRINT_VERBOSE(1, "Restoring system files: %s\n", (cmd_flags & CMD_FLAG_RESTORE_SYSTEM_FILES ? "Yes":"No"));
+			PRINT_VERBOSE(1, "正在还原系统文件: %s\n", (cmd_flags & CMD_FLAG_RESTORE_SYSTEM_FILES ? "Yes":"No"));
 			if (cmd_flags & CMD_FLAG_RESTORE_NO_REBOOT)
 				plist_dict_set_item(opts, "RestoreShouldReboot", plist_new_bool(0));
-			PRINT_VERBOSE(1, "Rebooting after restore: %s\n", (cmd_flags & CMD_FLAG_RESTORE_NO_REBOOT ? "No":"Yes"));
+			PRINT_VERBOSE(1, "还原后重新启动: %s\n", (cmd_flags & CMD_FLAG_RESTORE_NO_REBOOT ? "No":"Yes"));
 			if ((cmd_flags & CMD_FLAG_RESTORE_COPY_BACKUP) == 0)
 				plist_dict_set_item(opts, "RestoreDontCopyBackup", plist_new_bool(1));
-			PRINT_VERBOSE(1, "Don't copy backup: %s\n", ((cmd_flags & CMD_FLAG_RESTORE_COPY_BACKUP) == 0 ? "Yes":"No"));
+			PRINT_VERBOSE(1, "不复制备份: %s\n", ((cmd_flags & CMD_FLAG_RESTORE_COPY_BACKUP) == 0 ? "Yes":"No"));
 			plist_dict_set_item(opts, "RestorePreserveSettings", plist_new_bool((cmd_flags & CMD_FLAG_RESTORE_SETTINGS) == 0));
-			PRINT_VERBOSE(1, "Preserve settings of device: %s\n", ((cmd_flags & CMD_FLAG_RESTORE_SETTINGS) == 0 ? "Yes":"No"));
+			PRINT_VERBOSE(1, "保留设备设置: %s\n", ((cmd_flags & CMD_FLAG_RESTORE_SETTINGS) == 0 ? "Yes":"No"));
 			plist_dict_set_item(opts, "RemoveItemsNotRestored", plist_new_bool(cmd_flags & CMD_FLAG_RESTORE_REMOVE_ITEMS));
-			PRINT_VERBOSE(1, "Remove items that are not restored: %s\n", ((cmd_flags & CMD_FLAG_RESTORE_REMOVE_ITEMS) ? "Yes":"No"));
+			PRINT_VERBOSE(1, "删除未还原的项目: %s\n", ((cmd_flags & CMD_FLAG_RESTORE_REMOVE_ITEMS) ? "Yes":"No"));
 			if (backup_password != NULL) {
 				plist_dict_set_item(opts, "Password", plist_new_string(backup_password));
 			}
-			PRINT_VERBOSE(1, "Backup password: %s\n", (backup_password == NULL ? "No":"Yes"));
+			PRINT_VERBOSE(1, "备份密码: %s\n", (backup_password == NULL ? "No":"Yes"));
 
 			if (cmd_flags & CMD_FLAG_RESTORE_SKIP_APPS) {
-				PRINT_VERBOSE(1, "Not writing RestoreApplications.plist - apps will not be re-installed after restore\n");
+				PRINT_VERBOSE(1, "不写入RestoreApplications.plist - 还原后不会重新安装应用程序\n");
 			} else {
 				/* Write /iTunesRestore/RestoreApplications.plist so that the device will start
 				 * restoring applications once the rest of the restore process is finished */
@@ -2114,7 +2114,7 @@ checkpoint:
 					cmd = CMD_LEAVE;
 					break;
 				}
-				PRINT_VERBOSE(1, "Wrote RestoreApplications.plist\n");
+				PRINT_VERBOSE(1, "写入RestoreApplications.plist\n");
 			}
 
 			/* Start restore */
@@ -2132,18 +2132,18 @@ checkpoint:
 			}
 			break;
 			case CMD_INFO:
-			PRINT_VERBOSE(1, "Requesting backup info from device...\n");
+			PRINT_VERBOSE(1, "正在从设备请求备份信息...\n");
 			err = mobilebackup2_send_request(mobilebackup2, "Info", udid, source_udid, NULL);
 			if (err != MOBILEBACKUP2_E_SUCCESS) {
-				printf("Error requesting backup info from device, error code %d\n", err);
+				printf("从设备请求备份信息时出错，错误代码: %d\n", err);
 				cmd = CMD_LEAVE;
 			}
 			break;
 			case CMD_LIST:
-			PRINT_VERBOSE(1, "Requesting backup list from device...\n");
+			PRINT_VERBOSE(1, "正在从设备请求备份列表...\n");
 			err = mobilebackup2_send_request(mobilebackup2, "List", udid, source_udid, NULL);
 			if (err != MOBILEBACKUP2_E_SUCCESS) {
-				printf("Error requesting backup list from device, error code %d\n", err);
+				printf("从设备请求备份列表时出错，错误代码: %d\n", err);
 				cmd = CMD_LEAVE;
 			}
 			break;
@@ -2153,7 +2153,7 @@ checkpoint:
 				opts = plist_new_dict();
 				plist_dict_set_item(opts, "Password", plist_new_string(backup_password));
 			}
-			PRINT_VERBOSE(1, "Backup password: %s\n", (backup_password == NULL ? "No":"Yes"));
+			PRINT_VERBOSE(1, "备份密码: %s\n", (backup_password == NULL ? "No":"Yes"));
 			err = mobilebackup2_send_request(mobilebackup2, "Unback", udid, source_udid, opts);
 			if (backup_password !=NULL) {
 				plist_free(opts);
@@ -2293,10 +2293,10 @@ checkpoint:
 				dlmsg = NULL;
 				mberr = mobilebackup2_receive_message(mobilebackup2, &message, &dlmsg);
 				if (mberr == MOBILEBACKUP2_E_RECEIVE_TIMEOUT) {
-					PRINT_VERBOSE(2, "Device is not ready yet, retrying...\n");
+					PRINT_VERBOSE(2, "设备尚未就绪，正在重试...\n");
 					goto files_out;
 				} else if (mberr != MOBILEBACKUP2_E_SUCCESS) {
-					PRINT_VERBOSE(0, "ERROR: Could not receive from mobilebackup2 (%d)\n", mberr);
+					PRINT_VERBOSE(0, "错误：无法从mobilebackup2接收 (%d)\n", mberr);
 					quit_flag++;
 					goto files_out;
 				}
@@ -2344,7 +2344,7 @@ checkpoint:
 					mb2_set_overall_progress_from_message(message, dlmsg);
 					plist_t moves = plist_array_get_item(message, 1);
 					uint32_t cnt = plist_dict_get_size(moves);
-					PRINT_VERBOSE(1, "Moving %d file%s\n", cnt, (cnt == 1) ? "" : "s");
+					PRINT_VERBOSE(1, "正在移动%d个文件%s\n", cnt, (cnt == 1) ? "" : "s");
 					plist_dict_iter iter = NULL;
 					plist_dict_new_iter(moves, &iter);
 					errcode = 0;
@@ -2367,7 +2367,7 @@ checkpoint:
 									else
 										remove_file(newpath);
 									if (rename(oldpath, newpath) < 0) {
-										printf("Renameing '%s' to '%s' failed: %s (%d)\n", oldpath, newpath, strerror(errno), errno);
+										printf("将'%s'重命名为'%s'失败: %s (%d)\n", oldpath, newpath, strerror(errno), errno);
 										errcode = errno_to_device_error(errno);
 										errdesc = strerror(errno);
 										break;
@@ -2383,19 +2383,19 @@ checkpoint:
 					} else {
 						errcode = -1;
 						errdesc = "Could not create dict iterator";
-						printf("Could not create dict iterator\n");
+						printf("无法创建dict迭代器\n");
 					}
 					plist_t empty_dict = plist_new_dict();
 					err = mobilebackup2_send_status_response(mobilebackup2, errcode, errdesc, empty_dict);
 					plist_free(empty_dict);
 					if (err != MOBILEBACKUP2_E_SUCCESS) {
-						printf("Could not send status response, error %d\n", err);
+						printf("无法发送状态响应，错误: %d\n", err);
 					}
 				} else if (!strcmp(dlmsg, "DLMessageRemoveFiles") || !strcmp(dlmsg, "DLMessageRemoveItems")) {
 					mb2_set_overall_progress_from_message(message, dlmsg);
 					plist_t removes = plist_array_get_item(message, 1);
 					uint32_t cnt = plist_array_get_size(removes);
-					PRINT_VERBOSE(1, "Removing %d file%s\n", cnt, (cnt == 1) ? "" : "s");
+					PRINT_VERBOSE(1, "正在删除%d个文件%s\n", cnt, (cnt == 1) ? "" : "s");
 					uint32_t ii = 0;
 					errcode = 0;
 					errdesc = NULL;
@@ -2422,7 +2422,7 @@ checkpoint:
 								}
 								if (res != 0 && res != ENOENT) {
 									if (!suppress_warning)
-										printf("Could not remove '%s': %s (%d)\n", newpath, strerror(res), res);
+										printf("无法删除'%s': %s (%d)\n", newpath, strerror(res), res);
 									errcode = errno_to_device_error(res);
 									errdesc = strerror(res);
 								}
@@ -2434,7 +2434,7 @@ checkpoint:
 					err = mobilebackup2_send_status_response(mobilebackup2, errcode, errdesc, empty_dict);
 					plist_free(empty_dict);
 					if (err != MOBILEBACKUP2_E_SUCCESS) {
-						printf("Could not send status response, error %d\n", err);
+						printf("无法发送状态响应，错误: %d\n", err);
 					}
 				} else if (!strcmp(dlmsg, "DLMessageCopyItem")) {
 					plist_t srcpath = plist_array_get_item(message, 1);
@@ -2450,7 +2450,7 @@ checkpoint:
 							char *oldpath = string_build_path(backup_directory, src, NULL);
 							char *newpath = string_build_path(backup_directory, dst, NULL);
 
-							PRINT_VERBOSE(1, "Copying '%s' to '%s'\n", src, dst);
+							PRINT_VERBOSE(1, "正在复制'%s'到'%s'\n", src, dst);
 
 							/* check that src exists */
 							if ((stat(oldpath, &st) == 0) && S_ISDIR(st.st_mode)) {
@@ -2469,7 +2469,7 @@ checkpoint:
 					err = mobilebackup2_send_status_response(mobilebackup2, errcode, errdesc, empty_dict);
 					plist_free(empty_dict);
 					if (err != MOBILEBACKUP2_E_SUCCESS) {
-						printf("Could not send status response, error %d\n", err);
+						printf("无法发送状态响应，错误: %d\n", err);
 					}
 				} else if (!strcmp(dlmsg, "DLMessageDisconnect")) {
 					break;
@@ -2499,9 +2499,9 @@ checkpoint:
 					}
 					if (error_code != 0) {
 						if (str) {
-							printf("ErrorCode %d: %s\n", error_code, str);
+							printf("错误代码 %d: %s\n", error_code, str);
 						} else {
-							printf("ErrorCode %d: (Unknown)\n", error_code);
+							printf("错误代码 %d: (未知)\n", error_code);
 						}
 					}
 					if (str) {
@@ -2524,7 +2524,7 @@ checkpoint:
 						progress_finished = 1;
 					}
 					print_progress_real(overall_progress, 0);
-					PRINT_VERBOSE(1, " Finished\n");
+					PRINT_VERBOSE(1, " 已完成\n");
 				}
 
 files_out:
@@ -2567,14 +2567,14 @@ files_out:
 				}
 				break;
 				case CMD_BACKUP:
-					PRINT_VERBOSE(1, "Received %d files from device.\n", file_count);
+					PRINT_VERBOSE(1, "从设备收到%d个文件\n", file_count);
 					if (operation_ok && mb2_status_check_snapshot_state(backup_directory, udid, "finished")) {
-						PRINT_VERBOSE(1, "Backup Successful.\n");
+						PRINT_VERBOSE(1, "备份成功！\n");
 					} else {
 						if (quit_flag) {
-							PRINT_VERBOSE(1, "Backup Aborted.\n");
+							PRINT_VERBOSE(1, "备份已中止！\n");
 						} else {
-							PRINT_VERBOSE(1, "Backup Failed (Error Code %d).\n", -result_code);
+							PRINT_VERBOSE(1, "备份失败 (错误代码: %d).\n", -result_code);
 						}
 					}
 				break;
@@ -2610,15 +2610,15 @@ files_out:
 				case CMD_RESTORE:
 				if (operation_ok) {
 					if ((cmd_flags & CMD_FLAG_RESTORE_NO_REBOOT) == 0)
-						PRINT_VERBOSE(1, "The device should reboot now.\n");
-					PRINT_VERBOSE(1, "Restore Successful.\n");
+						PRINT_VERBOSE(1, "设备现在应该重新启动\n");
+					PRINT_VERBOSE(1, "还原成功!\n");
 				} else {
 					afc_remove_path(afc, "/iTunesRestore/RestoreApplications.plist");
 					afc_remove_path(afc, "/iTunesRestore");
 					if (quit_flag) {
-						PRINT_VERBOSE(1, "Restore Aborted.\n");
+						PRINT_VERBOSE(1, "还原已中止！\n");
 					} else {
-						PRINT_VERBOSE(1, "Restore Failed (Error Code %d).\n", -result_code);
+						PRINT_VERBOSE(1, "还原失败 (错误代码: %d)\n", -result_code);
 					}
 				}
 				break;
@@ -2627,11 +2627,11 @@ files_out:
 				case CMD_LEAVE:
 				default:
 				if (quit_flag) {
-					PRINT_VERBOSE(1, "Operation Aborted.\n");
+					PRINT_VERBOSE(1, "操作已中止！\n");
 				} else if (cmd == CMD_LEAVE) {
-					PRINT_VERBOSE(1, "Operation Failed.\n");
+					PRINT_VERBOSE(1, "操作失败！\n");
 				} else {
-					PRINT_VERBOSE(1, "Operation Successful.\n");
+					PRINT_VERBOSE(1, "操作成功！\n");
 				}
 				break;
 			}
@@ -2644,7 +2644,7 @@ files_out:
 				do_post_notification(device, NP_SYNC_DID_FINISH);
 		}
 	} else {
-		printf("ERROR: Could not start service %s: %s\n", MOBILEBACKUP2_SERVICE_NAME, lockdownd_strerror(ldret));
+		printf("错误: 无法启动服务%s: %s\n", MOBILEBACKUP2_SERVICE_NAME, lockdownd_strerror(ldret));
 		lockdownd_client_free(lockdown);
 		lockdown = NULL;
 	}
