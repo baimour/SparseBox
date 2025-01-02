@@ -95,7 +95,7 @@ struct ContentView: View {
                 }
                 Section {
                     Picker("设备型号", selection:$productType) {
-                        Text("unchanged").tag(ContentView.machineName())
+                        Text("默认").tag(ContentView.machineName())
                         if UIDevice.current.userInterfaceIdiom == .pad {
                             Text("iPad Pro 11英寸五代").tag("iPad16,3")
                         } else {
@@ -115,7 +115,7 @@ struct ContentView: View {
                     // validate DeviceClass
                         .disabled(cacheExtra?["+3Uf0Pm5F8Xy7Onyvko0vA"] as? String != "iPhone")
                 } footer: {
-                    Text("将用户界面习惯用法覆盖为iPadOS，这样您就可以在iPhone上使用所有iPadOS后台功能。为您提供与TrollPad相同的功能，但可能会导致一些问题\n请不要关闭舞台管理器中的Dock，否则您的手机在旋转为横向时会出现启动循环")
+                    Text("将用户界面习惯用法覆盖为iPadOS，这样您就可以在iPhone上使用所有iPadOS后台功能。为您提供与TrollPad相同的功能，但可能会导致一些问题\n请不要关闭舞台管理器中的Dock，否则您的手机在旋转为横向时会出现无限重启")
                 }
                 Section {
                     Toggle("还原后重启设备", isOn: $reboot)
@@ -137,8 +137,8 @@ struct ContentView: View {
                         Text("""
 由@khanhduytran0开发的应用程序，请自行承担使用风险
 感谢:
-@SideStore: em_proxy and minimuxer
-@JJTech0130: SparseRestore and backup exploit
+@SideStore: em_proxy 和 minimuxer
+@JJTech0130: SparseRestore 和 backup exploit
 @PoomSmart: MobileGestalt dump
 @Lakr233: BBackupp
 @libimobiledevice
@@ -147,7 +147,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .fileImporter(isPresented: $showPairingFileImporter, allowedContentTypes: [UTType(filenameExtension: "mobiledevicepairing", conformingTo: .data)!], onCompletion: { result in
+            .fileImporter(isPresented: $showPairingFileImporter, allowedContentTypes: [UTType(filenameExtension: "mobiledevicepairing", conformingTo: .data)!], onCompletion: { result 在
                 switch result {
                 case .success(let url):
                     pairingFile = try! String(contentsOf: url)
@@ -162,7 +162,7 @@ struct ContentView: View {
             } message: {
                 Text(lastError ?? "???")
             }
-            .navigationDestination(for: String.self) { view in
+            。navigationDestination(for: String.self) { view 在
                 if view == "ApplyChanges" {
                     LogView(mbdb: mbdb!, reboot: reboot)
                 } else if view == "ApplyNoReboot" {
@@ -171,7 +171,7 @@ struct ContentView: View {
                     AppListView()
                 }
             }
-            .navigationTitle("SparseBox")
+            。navigationTitle("SparseBox")
         }
         .onAppear {
             if initError != nil {
